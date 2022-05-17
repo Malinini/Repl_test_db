@@ -1,5 +1,6 @@
 import sqlite3
 import datetime
+from fuzzy import fuzzy_search
 
 
 def insert_db(ins):
@@ -48,6 +49,7 @@ def view_search(search_result):
         vozrast = today.year - date_obj.year - ((today.month, today.day) < (date_obj.month, date_obj.day))
         print(f'{row[1]} {row[2]} родился {row[3]} возраст {vozrast}')
 
+
 def nestrog (people_info):
     people_info_nest = []
     for i in people_info:
@@ -65,7 +67,6 @@ def new_search (people_info, nestrog=False):
     if nestrog:
         what = 'OR'
         is_or_like = 'LIKE'
-        
         
     else:
         what = "AND"
@@ -96,8 +97,6 @@ def new_search (people_info, nestrog=False):
     if len(search_result) == 0:
         print('Таких еще нет в базе')
     return search_result
-        
-    
 
 
 def search_nestrog(what_search):
@@ -152,11 +151,17 @@ while True:
         result = new_search(search_list, False)
         view_search(result)
 
-    elif command == 'sos':
+    elif command == 's+':
         people_info = str.title(input('кого ищем (не строго): '))
         nestrog_list = people_info.split()
         nestrog_list = nestrog(nestrog_list)
         result = new_search(nestrog_list, True)
         view_search(result)
+    elif command == 's++':
+        people_info = str.title(input('кого ищем (не строго): '))
+        search_name_list = people_info.split()
+        db_result = view_db()
+        search_result = fuzzy_search(search_name_list, db_result)
+        view_search(search_result)
     else:
         break
